@@ -8,6 +8,8 @@ from django.views.generic import ListView,DetailView,CreateView,FormView,UpdateV
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from .form import *
+from accounts.models import Profile
+
 
 # Create your views here.
 
@@ -27,7 +29,7 @@ class PostList(LoginRequiredMixin,ListView):
     #model = Post
     #queryset = Post.objects.all()
     def get_queryset(self):
-        posts = Post.objects.filter(status=True).order_by('-published_date')
+        posts = Post.objects.filter(status=True).order_by('-id')
         return posts
 
     context_object_name = "posts"
@@ -42,7 +44,8 @@ class PostCreateView(LoginRequiredMixin,CreateView):
     success_url = '/blog/post/'
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        profile = Profile.objects.get(user=self.request.user)
+        form.instance.author = profile
         return super().form_valid(form)
     
 
